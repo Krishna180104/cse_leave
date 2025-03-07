@@ -4,7 +4,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const Signup = () => {
     const [name, setName] = useState("");
-    const [regNo, setRegNo] = useState("");
+    const [registrationNumber, setregistrationNumber] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -12,11 +12,13 @@ const Signup = () => {
     const [role, setRole] = useState("student"); // Default role is Student
     const navigate = useNavigate();
 
+    
+
     const handleSignup = async (e) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append("name", name);
-        formData.append("regNo", regNo);
+        formData.append("registrationNumber", registrationNumber);
         formData.append("email", email);
         formData.append("password", password);
         formData.append("idCardImage", idCardImage);
@@ -59,8 +61,8 @@ const Signup = () => {
                     <input 
                         type="text" 
                         placeholder="Registration Number" 
-                        value={regNo} 
-                        onChange={(e) => setRegNo(e.target.value)}
+                        value={registrationNumber} 
+                        onChange={(e) => setregistrationNumber(e.target.value)}
                         className="w-full p-2 mb-4 border rounded"
                         required 
                     />

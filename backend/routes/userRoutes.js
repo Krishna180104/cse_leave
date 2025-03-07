@@ -29,6 +29,21 @@ router.post("/register", upload.single("idCardImage"), async (req, res) => {
             return res.status(400).json({ message: "All fields are required." });
         }
 
+        // ✅ Check if the email already exists
+        const existingUserByEmail = await User.findOne({ email });
+        if (role === "student") {
+            const existingUserByRegNo = await User.findOne({ registrationNumber });
+            if (existingUserByRegNo) {
+                return res.status(400).json({ message: "Registration number already exists. Please check your details." });
+            }
+        }
+        if (existingUserByEmail) {
+            return res.status(400).json({ message: "Email already exists. Please use a different email." });
+        }
+
+        // ✅ Check if the registration number already exists (only for students)
+        
+
         // Check if this is the first signup
         const existingUsers = await User.countDocuments();
         let isApproved = existingUsers === 0; // First user is auto-approved as admin
@@ -53,9 +68,12 @@ router.post("/register", upload.single("idCardImage"), async (req, res) => {
         res.status(201).json({ message: isApproved ? "Admin account created successfully." : "Registration request sent. Wait for admin approval." });
 
     } catch (error) {
+        console.error("❌ Server Error:", error);
         res.status(500).json({ message: "Server error.", error });
     }
 });
+
+
 
 // User Login Route
 router.post("/login", async (req, res) => {
