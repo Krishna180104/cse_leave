@@ -16,10 +16,12 @@ const Login = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
-
+    
             const data = await response.json();
             if (response.ok) {
                 localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data.user)); // ✅ Store full user details
+                console.log("User data stored in localStorage:", data.user); // 🔍 Debugging log
                 navigate("/dashboard");
             } else {
                 alert(data.message);
@@ -28,6 +30,8 @@ const Login = () => {
             console.error("Login failed:", error);
         }
     };
+    
+
 
     return (
         <div className="flex flex-col h-screen items-center justify-center bg-gray-900 text-white px-4">

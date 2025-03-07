@@ -66,4 +66,43 @@ router.delete("/delete/:id", authMiddleware, async (req, res) => {
     }
 });
 
+
+router.get("/pending", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied." });
+        }
+
+        // Fetch users who are not approved
+        const pendingUsers = await User.find({ isApproved: false }).select("-password");
+        res.json(pendingUsers);
+    } catch (error) {
+        res.status(500).json({ message: "Server error.", error });
+    }
+});
+
+router.delete("/reject/:id", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied." });
+        }
+
+        const userId = req.params.id;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        if (user.isApproved) {
+            return res.status(400).json({ message: "Cannot reject an already approved user." });
+        }
+
+        await User.findByIdAndDelete(userId);
+        res.json({ message: "User signup request rejected and deleted." });
+    } catch (error) {
+        res.status(500).json({ message: "Server error.", error });
+    }
+});
+
+
 export default router;
