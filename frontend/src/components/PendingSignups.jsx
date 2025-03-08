@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const PendingSignups = () => {
     const [pendingUsers, setPendingUsers] = useState([]);
+    const [selectedImage, setSelectedImage] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -61,6 +62,7 @@ const PendingSignups = () => {
                             <th className="p-3">Name</th>
                             <th className="p-3">Email</th>
                             <th className="p-3">Role</th>
+                            <th className="p-3">ID Card</th>
                             <th className="p-3">Actions</th>
                         </tr>
                     </thead>
@@ -70,6 +72,14 @@ const PendingSignups = () => {
                                 <td className="p-3">{user.name}</td>
                                 <td className="p-3">{user.email}</td>
                                 <td className="p-3">{user.role}</td>
+                                <td className="p-3">
+                                    <img 
+                                        src={`http://localhost:5000/${user.idCardImage}`} 
+                                        alt="ID Card" 
+                                        className="h-16 w-16 object-cover rounded border cursor-pointer" 
+                                        onClick={() => setSelectedImage(`http://localhost:5000/${user.idCardImage}`)}
+                                    />
+                                </td>
                                 <td className="p-3">
                                     <button 
                                         className="bg-green-600 text-white px-3 py-1 rounded mr-2"
@@ -92,6 +102,12 @@ const PendingSignups = () => {
                         <h3 className="text-lg font-bold">{user.name}</h3>
                         <p className="text-gray-600">{user.email}</p>
                         <p className="text-gray-600">Role: {user.role}</p>
+                        <img 
+                            src={`http://localhost:5000/${user.idCardImage}`} 
+                            alt="ID Card" 
+                            className="h-24 w-24 object-cover rounded border mt-2 cursor-pointer" 
+                            onClick={() => setSelectedImage(`http://localhost:5000/${user.idCardImage}`)}
+                        />
                         <div className="mt-3">
                             <button 
                                 className="bg-green-600 text-white px-3 py-1 rounded mr-2"
@@ -105,6 +121,12 @@ const PendingSignups = () => {
                     </div>
                 ))}
             </div>
+            {/* Image Preview Modal */}
+            {selectedImage && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={() => setSelectedImage(null)}>
+                    <img src={selectedImage} alt="ID Card" className="max-w-full max-h-full rounded shadow-lg" />
+                </div>
+            )}
         </div>
     );
 };
