@@ -1,6 +1,8 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import User from "../models/User.js";
+import path from "path";
+import fs from "fs";
 
 const router = express.Router();
 
@@ -97,12 +99,20 @@ router.delete("/reject/:id", authMiddleware, async (req, res) => {
             return res.status(400).json({ message: "Cannot reject an already approved user." });
         }
 
+        // Delete the ID card image if it exists
+        if (user.idCardImage) {
+            const imagePath = path.join("uploads", path.basename(user.idCardImage));
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath); // Remove the image from the uploads folder
+            }
+        }
+
         await User.findByIdAndDelete(userId);
         res.json({ message: "User signup request rejected and deleted." });
     } catch (error) {
+        console.error("Error rejecting user:", error);
         res.status(500).json({ message: "Server error.", error });
     }
 });
-
 
 export default router;
