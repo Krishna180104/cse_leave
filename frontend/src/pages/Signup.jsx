@@ -43,7 +43,8 @@ const Signup = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen items-center justify-center bg-gray-900 text-white px-4">
+        <div className="flex flex-col h-screen items-center justify-center bg-gradient-to-br from-sky-300 to-purple-400 text-white px-4 shadow-lg shadow-blue-200/50">
+
             <h1 className="text-2xl md:text-3xl font-bold text-center">Leave Application Portal</h1>
             <h2 className="text-sm md:text-lg text-center mb-6">Department of Computer Science and Engineering, SGGSIE&T</h2>
             
