@@ -6,37 +6,38 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false); // ✅ Added loading state
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true); // ✅ Show loading indicator
+
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
-    
+
             const data = await response.json();
             if (response.ok) {
                 localStorage.setItem("token", data.token);
-                localStorage.setItem("user", JSON.stringify(data.user)); // ✅ Store full user details
-                console.log("User data stored in localStorage:", data.user); // 🔍 Debugging log
+                localStorage.setItem("user", JSON.stringify(data.user));
+                console.log("User data stored in localStorage:", data.user);
                 navigate("/dashboard");
             } else {
                 alert(data.message);
             }
         } catch (error) {
             console.error("Login failed:", error);
+        } finally {
+            setLoading(false); // ✅ Hide loading indicator
         }
     };
-    
-
 
     return (
         <div className="flex flex-col h-screen items-center justify-center bg-gradient-to-br from-sky-300 to-purple-400 text-white px-4 shadow-lg shadow-blue-200/50">
-
-
             <h1 className="text-2xl md:text-3xl font-bold text-center">Leave Application Portal</h1>
             <h2 className="text-sm md:text-lg text-center mb-6">Department of Computer Science and Engineering, SGGSIE&T</h2>
             
@@ -67,8 +68,12 @@ const Login = () => {
                             {showPassword ? <EyeIcon className="h-5 w-5 text-gray-500" /> : <EyeSlashIcon className="h-5 w-5 text-gray-500" />}
                         </span>
                     </div>
-                    <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
-                        Login
+                    <button 
+                        type="submit" 
+                        className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                        disabled={loading} // ✅ Disable button when loading
+                    >
+                        {loading ? "Logging in..." : "Login"} {/* ✅ Show loading text */}
                     </button>
                 </form>
                 <p className="mt-4 text-center">
