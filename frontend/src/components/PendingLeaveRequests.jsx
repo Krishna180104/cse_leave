@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+
 const PendingLeaveRequests = () => {
     const [leaveRequests, setLeaveRequests] = useState([]);
 
@@ -10,7 +11,7 @@ const PendingLeaveRequests = () => {
 
     const fetchLeaveRequests = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/admin/leave-requests");
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/leave-requests`);
             if (Array.isArray(response.data)) {
                 setLeaveRequests(response.data);
             } else {
@@ -25,7 +26,7 @@ const PendingLeaveRequests = () => {
 
     const approveLeave = async (id) => {
         try {
-            await axios.put(`http://localhost:5000/api/admin/approve-leave/${id}`);
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/approve-leave/${id}`);
             setLeaveRequests((prevRequests) => prevRequests.filter((request) => request._id !== id));
         } catch (error) {
             console.error("Error approving leave:", error);
@@ -34,7 +35,7 @@ const PendingLeaveRequests = () => {
 
     const rejectLeave = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/admin/reject-leave/${id}`);
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/reject-leave/${id}`);
             setLeaveRequests((prevRequests) => prevRequests.filter((request) => request._id !== id));
         } catch (error) {
             console.error("Error rejecting leave:", error);

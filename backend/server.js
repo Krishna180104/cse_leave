@@ -11,10 +11,12 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+const allowedOrigins = ['http://localhost:5173', 'https://your-frontend.onrender.com'];
+app.use(cors({ origin: allowedOrigins }));
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cors({ origin: 'https://cse-leave-1.onrender.com' }));
 app.use("/uploads", express.static("uploads"));
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {

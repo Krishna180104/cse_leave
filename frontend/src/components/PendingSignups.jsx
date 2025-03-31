@@ -9,7 +9,7 @@ const PendingSignups = () => {
     useEffect(() => {
         const fetchPendingUsers = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/admin/pending", {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/pending`, {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
     
@@ -29,7 +29,7 @@ const PendingSignups = () => {
 
     const handleApprove = async (id) => {
         try {
-            await fetch(`http://localhost:5000/api/admin/approve/${id}`, {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/admin/approve/${id}`, {
                 method: "PUT",
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
@@ -41,7 +41,7 @@ const PendingSignups = () => {
 
     const handleReject = async (id) => {
         try {
-            await fetch(`http://localhost:5000/api/admin/reject/${id}`, {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/admin/reject/${id}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
@@ -74,10 +74,10 @@ const PendingSignups = () => {
                                 <td className="p-3">{user.role}</td>
                                 <td className="p-3">
                                     <img 
-                                        src={`http://localhost:5000/${user.idCardImage}`} 
+                                        src={`${import.meta.env.VITE_API_URL}/${user.idCardImage}`} 
                                         alt="ID Card" 
                                         className="h-16 w-16 object-cover rounded border cursor-pointer" 
-                                        onClick={() => setSelectedImage(`http://localhost:5000/${user.idCardImage}`)}
+                                        onClick={() => setSelectedImage(`${import.meta.env.VITE_API_URL}/${user.idCardImage}`)}
                                     />
                                 </td>
                                 <td className="p-3">
@@ -103,10 +103,10 @@ const PendingSignups = () => {
                         <p className="text-gray-600">{user.email}</p>
                         <p className="text-gray-600">Role: {user.role}</p>
                         <img 
-                            src={`http://localhost:5000/${user.idCardImage}`} 
+                            src={`${import.meta.env.VITE_API_URL}/${user.idCardImage}`} 
                             alt="ID Card" 
                             className="h-24 w-24 object-cover rounded border mt-2 cursor-pointer" 
-                            onClick={() => setSelectedImage(`http://localhost:5000/${user.idCardImage}`)}
+                            onClick={() => setSelectedImage(`${import.meta.env.VITE_API_URL}/${user.idCardImage}`)}
                         />
                         <div className="mt-3">
                             <button 
