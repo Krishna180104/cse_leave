@@ -1,6 +1,7 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import User from "../models/User.js";
+import LeaveRequest from "../models/LeaveApplication.js";
 import path from "path";
 import fs from "fs";
 
@@ -114,5 +115,37 @@ router.delete("/reject/:id", authMiddleware, async (req, res) => {
         res.status(500).json({ message: "Server error.", error });
     }
 });
+
+// Fetch all pending leave applications
+router.get("/leave-requests", async (req, res) => {
+    try {
+        const pendingRequests = await LeaveRequest.find({ status: "pending" });
+        console.log(pendingRequests);
+        res.json(pendingRequests);
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+// Approve a leave request
+router.put("/approve-leave/:id", async (req, res) => {
+    try {
+        await LeaveRequest.findByIdAndUpdate(req.params.id, { status: "approved" });
+        res.json({ message: "Leave application approved" });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to approve leave" });
+    }
+});
+
+// Reject a leave request
+router.delete("/reject-leave/:id", async (req, res) => {
+    try {
+        await LeaveRequest.findByIdAndDelete(req.params.id);
+        res.json({ message: "Leave application rejected" });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to reject leave" });
+    }
+});
+
 
 export default router;

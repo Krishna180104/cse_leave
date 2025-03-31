@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HomeIcon, ClipboardDocumentListIcon, CheckCircleIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import PendingSignups from "../components/PendingSignups"; // ✅ Import pending signups
+import PendingLeaveRequests from "../components/PendingLeaveRequests"; // ✅ Import pending leave requests
 
 const Dashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
     const [userName, setUserName] = useState("");
+    const [activePage, setActivePage] = useState("home"); // ✅ Track active page
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -40,10 +42,10 @@ const Dashboard = () => {
                 <nav>
                     <ul>
                         <li className="mb-4">
-                            <Link to="/dashboard" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-700">
+                            <button onClick={() => setActivePage("home")} className="flex items-center space-x-2 p-2 rounded hover:bg-gray-700 w-full text-left">
                                 <HomeIcon className="h-5 w-5" />
                                 <span>Home</span>
-                            </Link>
+                            </button>
                         </li>
                         {userRole === "student" && (
                             <li className="mb-4">
@@ -54,12 +56,20 @@ const Dashboard = () => {
                             </li>
                         )}
                         {userRole === "admin" && (
-                            <li>
-                                <Link to="/dashboard/approvals" className="flex items-center space-x-2 p-2 rounded hover:bg-gray-700">
-                                    <CheckCircleIcon className="h-5 w-5" />
-                                    <span>Approvals</span>
-                                </Link>
-                            </li>
+                            <>
+                                <li className="mb-4">
+                                    <button onClick={() => setActivePage("pending-signups")} className="flex items-center space-x-2 p-2 rounded hover:bg-gray-700 w-full text-left">
+                                        <CheckCircleIcon className="h-5 w-5" />
+                                        <span>Pending Signups</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onClick={() => setActivePage("pending-leaves")} className="flex items-center space-x-2 p-2 rounded hover:bg-gray-700 w-full text-left">
+                                        <CheckCircleIcon className="h-5 w-5" />
+                                        <span>Pending Leave Requests</span>
+                                    </button>
+                                </li>
+                            </>
                         )}
                     </ul>
                 </nav>
@@ -81,16 +91,9 @@ const Dashboard = () => {
                 
                 {/* Page Content */}
                 <div className="flex-1 p-6 flex flex-col items-center w-full">
-                    {userRole === "student" ? (
-                        <h1 className="text-2xl md:text-4xl font-bold text-center">Welcome, {userName}!</h1>
-                    ) : userRole === "admin" ? (
-                        <div className="w-full max-w-6xl mx-auto">
-                            <h1 className="text-2xl md:text-4xl font-bold text-center mb-6">Welcome, {userName}!</h1>
-                            <PendingSignups /> {/* ✅ Add Pending Signup Requests here */}
-                        </div>
-                    ) : (
-                        <h1 className="text-2xl md:text-4xl font-bold text-center">Loading...</h1>
-                    )}
+                    {activePage === "home" && <h1 className="text-2xl md:text-4xl font-bold text-center">Welcome, {userName}!</h1>}
+                    {activePage === "pending-signups" && userRole === "admin" && <PendingSignups />}
+                    {activePage === "pending-leaves" && userRole === "admin" && <PendingLeaveRequests />}
                 </div>
             </div>
         </div>

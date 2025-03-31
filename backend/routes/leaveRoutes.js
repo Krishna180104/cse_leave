@@ -24,7 +24,7 @@ const router = express.Router();
 router.post("/apply", authMiddleware, async (req, res) => {
     try {
         const { startDate, endDate, reason } = req.body;
-
+        
         if (!startDate || !endDate || !reason) {
             return res.status(400).json({ message: "All fields are required." });
         }
@@ -291,7 +291,32 @@ router.get("/view-pdf/:id", async (req, res) => {
     }
 });
 
+// router.post("/apply", authMiddleware, async (req, res) => {
+//     try {
+//         if (req.user.role !== "student") {
+//             return res.status(403).json({ message: "Access denied." });
+//         }
 
+//         const { reason, startDate, endDate } = req.body;
+
+//         if (!reason || !startDate || !endDate) {
+//             return res.status(400).json({ message: "All fields are required." });
+//         }
+
+//         const leave = new LeaveApplication({
+//             student: req.user.id,
+//             reason,
+//             startDate,
+//             endDate
+//         });
+
+//         await leave.save();
+//         res.status(201).json({ message: "Leave application submitted successfully." });
+
+//     } catch (error) {
+//         res.status(500).json({ message: "Server error.", error });
+//     }
+// });
 
 
 
