@@ -2,8 +2,13 @@ import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import User from "../models/User.js";
 import LeaveRequest from "../models/LeaveApplication.js";
+import { generateLeavePDF } from "../utils/pdfGenerator.js";
+import { sendEmail } from "../utils/emailService.js";
 import path from "path";
 import fs from "fs";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -119,7 +124,9 @@ router.delete("/reject/:id", authMiddleware, async (req, res) => {
 // Fetch all pending leave applications
 router.get("/leave-requests", async (req, res) => {
     try {
-        const pendingRequests = await LeaveRequest.find({ status: "pending" });
+        const pendingRequests = await LeaveRequest.find({ status: "pending" })
+            .populate("student", "name email"); // Populate student details (adjust fields as needed)
+        
         console.log(pendingRequests);
         res.json(pendingRequests);
     } catch (error) {
@@ -130,20 +137,66 @@ router.get("/leave-requests", async (req, res) => {
 // Approve a leave request
 router.put("/approve-leave/:id", async (req, res) => {
     try {
-        await LeaveRequest.findByIdAndUpdate(req.params.id, { status: "approved" });
-        res.json({ message: "Leave application approved" });
+        const leaveRequest = await LeaveRequest.findById(req.params.id).populate("student");
+
+        if (!leaveRequest) {
+            return res.status(404).json({ message: "Leave request not found." });
+        }
+
+        // Update status to "approved"
+        leaveRequest.status = "approved";
+        await leaveRequest.save();
+
+        // Generate PDF
+        const pdfPath = await generateLeavePDF(leaveRequest);
+
+        // Construct public link (assuming server serves static files from "uploads" folder)
+        const pdfLink = `${process.env.SERVER_URL}/uploads/leave_${leaveRequest._id}.pdf`;
+
+        // Send Email with PDF link
+        const emailBody = `
+            Dear ${leaveRequest.student.name},
+
+            Your leave request has been approved.
+
+            You can download your approval letter from the link below:
+            ${pdfLink}
+
+            Best regards,
+            CSE Department
+        `;
+
+        await sendEmail(leaveRequest.student.email, "Leave Approved", emailBody);
+
+        res.json({ message: "Leave approved and email sent successfully.", pdfLink });
+
     } catch (error) {
-        res.status(500).json({ error: "Failed to approve leave" });
+        console.error("Error approving leave:", error);
+        res.status(500).json({ message: "Internal server error." });
     }
 });
 
 // Reject a leave request
 router.delete("/reject-leave/:id", async (req, res) => {
     try {
-        await LeaveRequest.findByIdAndDelete(req.params.id);
-        res.json({ message: "Leave application rejected" });
+        const leaveRequest = await LeaveRequest.findById(req.params.id).populate("student");
+
+        if (!leaveRequest) {
+            return res.status(404).json({ message: "Leave request not found." });
+        }
+
+        // Update status to "rejected"
+        leaveRequest.status = "rejected";
+        await leaveRequest.save();
+
+        // Send rejection email
+        await sendEmail(leaveRequest.student.email, "Leave Rejected", "Your leave request has been rejected.");
+
+        res.json({ message: "Leave rejected and email sent successfully." });
+
     } catch (error) {
-        res.status(500).json({ error: "Failed to reject leave" });
+        console.error("Error rejecting leave:", error);
+        res.status(500).json({ message: "Internal server error." });
     }
 });
 
