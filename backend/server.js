@@ -10,7 +10,7 @@ import leaveRoutes from "./routes/leaveRoutes.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5173;
+const PORT = process.env.PORT || 5000;
 const allowedOrigins = ['http://localhost:5173', 'https://cse-leave-1.onrender.com'];
 app.use(cors({ origin: allowedOrigins }));
 // Middleware

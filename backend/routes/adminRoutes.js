@@ -44,21 +44,34 @@ router.put("/approve/:id", authMiddleware, async (req, res) => {
     }
 });
 
-// Search user by registration number
+// Search students by registration number (prefix match)
 router.get("/search/:regNo", authMiddleware, async (req, res) => {
     try {
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Access denied." });
         }
 
-        const user = await User.findOne({ registrationNumber: req.params.regNo }).select("-password");
-        if (!user) return res.status(404).json({ message: "User not found." });
+        const searchQuery = req.params.regNo;
+        if (!searchQuery) {
+            return res.status(400).json({ message: "Search query is required." });
+        }
 
-        res.json(user);
+        // Find students whose registration number starts with the entered query
+        const users = await User.find({
+            registrationNumber: { $regex: `^${searchQuery}`, $options: "i" } // Case-insensitive prefix match
+        }).select("-password");
+
+        if (users.length === 0) {
+            return res.status(404).json({ message: "No students found." });
+        }
+
+        res.json(users);
     } catch (error) {
+        console.error("Search error:", error);
         res.status(500).json({ message: "Server error.", error });
     }
 });
+
 
 // Delete a user
 router.delete("/delete/:id", authMiddleware, async (req, res) => {
@@ -200,5 +213,26 @@ router.delete("/reject-leave/:id", async (req, res) => {
     }
 });
 
+
+//delete in bulk
+router.delete("/bulk-delete", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied." });
+        }
+
+        const { userIds } = req.body; // Expecting an array of user IDs
+        console.log(userIds);
+        if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+            return res.status(400).json({ message: "Invalid user IDs." });
+        }
+
+        await User.deleteMany({ _id: { $in: userIds } });
+
+        res.json({ message: "Users deleted successfully." });
+    } catch (error) {
+        res.status(500).json({ message: "Server error.", error });
+    }
+});
 
 export default router;
