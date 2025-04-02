@@ -15,7 +15,6 @@ const Dashboard = () => {
     const [searchedStudents, setSearchedStudents] = useState([]);
     const [selectedStudents, setSelectedStudents] = useState([]);
     const navigate = useNavigate();
-
     useEffect(() => {
         const userData = localStorage.getItem("user");
         if (!userData) {
@@ -41,12 +40,12 @@ const Dashboard = () => {
         try {
             const token = localStorage.getItem("token");
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/search/${searchRegNo}`, {
+                method:"GET",
                 headers: { Authorization: `Bearer ${token}` }
             });
-
             const data = await response.json();
             if (response.ok) {
-                setSearchedStudents([data]);
+                setSearchedStudents([data[0]]);
             } else {
                 alert(data.message);
                 setSearchedStudents([]);

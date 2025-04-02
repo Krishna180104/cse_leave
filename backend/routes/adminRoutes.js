@@ -60,7 +60,7 @@ router.get("/search/:regNo", authMiddleware, async (req, res) => {
         const users = await User.find({
             registrationNumber: { $regex: `^${searchQuery}`, $options: "i" } // Case-insensitive prefix match
         }).select("-password");
-
+        console.log(users);
         if (users.length === 0) {
             return res.status(404).json({ message: "No students found." });
         }
