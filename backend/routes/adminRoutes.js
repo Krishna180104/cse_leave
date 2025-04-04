@@ -168,16 +168,16 @@ router.put("/approve-leave/:id", async (req, res) => {
 
         // Send Email with PDF link
         const emailBody = `
-            Dear ${leaveRequest.student.name}\n,
+        Dear ${leaveRequest.student.name},\n
 
-            Your leave request has been approved.\n
+        Your leave request has been approved.\n
 
-            You can download your approval letter from the link below:\n
-            ${pdfLink}
+        You can download your approval letter from the link below:
+        ${pdfLink}
 
-            Best regards,\n
-            Department of Computer Science and Engineering\n
-            SGGSIE&T\n
+        Best regards,\n
+        Department of Computer Science and Engineering\n
+        SGGSIE&T\n
             
         `;
 
