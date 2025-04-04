@@ -164,19 +164,21 @@ router.put("/approve-leave/:id", async (req, res) => {
         const pdfPath = await generateLeavePDF(leaveRequest);
 
         // Construct public link (assuming server serves static files from "uploads" folder)
-        const pdfLink = `${process.env.SERVER_URL}/uploads/leave_${leaveRequest._id}.pdf`;
+        const pdfLink = `https://cse-leave.onrender.com/uploads/leave_${leaveRequest._id}.pdf`;
 
         // Send Email with PDF link
         const emailBody = `
-            Dear ${leaveRequest.student.name},
+            Dear ${leaveRequest.student.name}\n,
 
-            Your leave request has been approved.
+            Your leave request has been approved.\n
 
-            You can download your approval letter from the link below:
+            You can download your approval letter from the link below:\n
             ${pdfLink}
 
-            Best regards,
-            CSE Department
+            Best regards,\n
+            Department of Computer Science and Engineering\n
+            SGGSIE&T\n
+            
         `;
 
         await sendEmail(leaveRequest.student.email, "Leave Approved", emailBody);
