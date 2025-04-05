@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Meta, useNavigate } from "react-router-dom";
 import {
   HomeIcon,
   ClipboardDocumentListIcon,
@@ -50,13 +50,13 @@ const Dashboard = () => {
       const token = localStorage.getItem("token");
       try {
         const [signupRes, leaveRes, studentsRes] = await Promise.all([
-          fetch(`http://localhost:5000/api/admin/pending/count`, {
+          fetch(`${import.meta.env.VITE_API_URL}/api/admin/pending/count`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch(`http://localhost:5000/api/admin/leave-requests/count`, {
+          fetch(`${import.meta.env.VITE_API_URL}/api/admin/leave-requests/count`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch(`http://localhost:5000/api/admin/total-students`, {
+          fetch(`${import.meta.env.VITE_API_URL}/api/admin/total-students`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
