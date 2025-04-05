@@ -139,7 +139,7 @@ router.get("/leave-requests", async (req, res) => {
     try {
         const pendingRequests = await LeaveRequest.find({ status: "pending" })
             .populate("student", "name email"); // Populate student details (adjust fields as needed)
-        
+
         console.log(pendingRequests);
         res.json(pendingRequests);
     } catch (error) {
@@ -236,5 +236,42 @@ router.delete("/bulk-delete", authMiddleware, async (req, res) => {
         res.status(500).json({ message: "Server error.", error });
     }
 });
+
+// Total Registered Students Count
+router.get("/total-students", authMiddleware, async (req, res) => {
+    try {
+        const count = await User.countDocuments({ role: "student", isApproved: true });
+        res.json({ count });
+    } catch (err) {
+        console.error("Error fetching total students count:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+router.get("/pending/count", authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied." });
+        }
+        const pendingCount = await User.countDocuments({ isApproved: false });
+        res.json({ count: pendingCount });
+    } catch (error) {
+        res.status(500).json({ message: "Server error.", error });
+    }
+});
+
+// GET /api/admin/leave-requests/count
+router.get("/leave-requests/count", authMiddleware, async (req, res) => {
+    try {
+      if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "Access denied." });
+      }
+  
+      const count = await LeaveRequest.countDocuments({ status: "pending" });
+      res.json({ count });
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
 
 export default router;
